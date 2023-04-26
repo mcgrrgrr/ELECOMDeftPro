@@ -9,6 +9,10 @@ fi
 # Get the id of the mouse device
 device_id=$(xinput --list | grep -i "pointer" | grep -i "ELECOM TrackBall Mouse DEFT Pro TrackBall" | grep -o "id=[0-9]*" | cut -d= -f2)
 
+
+# First mapping
+# xinput set-button-map $device_id 1 9 8 4 5 6 7 3 2 10 11 12
+
 # Check if the device was found
 if [ -n "$device_id" ]; then
   # Set the button mapping for the device
@@ -20,30 +24,45 @@ else
   echo "ELECOM TrackBall Mouse not found"
 fi
 
-# First mapping
-# xinput set-button-map $device_id 1 9 8 4 5 6 7 3 2 10 11 12
+# This is the current construction zone
+#
+#
+# Set the mouse matrix
+# Default matrix 1 0 0 0 1 0 0 0 1
+#
+# This represents the affine matrix
+# | 1 0 0 |
+# | 0 1 0 |
+# | 0 0 1 |
 
-    # Set the mouse matrix
-    # Default matrix 1 0 0 0 1 0 0 0 1
-    # This represents
-    # | 1 0 0 |
-    # | 0 1 0 |
-    # | 0 0 1 |
-    
-# Get the Current matrix
-mouse_matrix=$(xinput list-props $device_id | grep Matrix)
+#
+# I am attempting to take the output from xinput list-props and format it
+# to appear the same as it does for the input for xinput set-prop and 
+# print it to the screen before and after the input is inverted on the 
+# origin. This will also be helpful in producing a check to make sure the
+# matrix was set properly.
+#
+# I'm trying to figure it out without just googling the answer. 
+# 
+# awk/gawk and sed will most likely make this easier
+#
+# This is the current command piping that works
+# xinput list-props "$device_id" | grep Matrix
+#
+#mouse_matrix=$(xinput list-props 10 | grep Matrix | grep -o "[-0-9].000000" | cut -c 1 | tr -d '\n' | sed 's/\B/ /g')
+
 
 # Check to see if matrix was found
 if [ -n "$mouse_matrix" ]; then
     # Set matrix for mouse
-    echo "current mouse_matrix: $mouse_matrix"
-    # Invert mouse output5
-    xinput set-prop $device_id Coordinate Tranformation Matrix -1 0 0 0 -1 0 0 0 1
-    echo "mouse_matrix iverted. Current mouse matrix: $mouse_matrix"
+    echo "mouse_matrix: $mouse_matrix"
+    xinput set-prop $device_id "Coordinate Tranformation Matrix" -1 0 0 0 -1 0 0 0 1
 else
     # Print error message
-    echo "Failed to invert mouse"
+    echo "Failed to find current Transformation Matrix"
 fi
+    # Invert mouse output
+    echo "new matrix: $mouse_matrix"
 
 
 # Confirm the button mapping was set successfully
