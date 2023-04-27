@@ -26,7 +26,6 @@ fi
 
 # This is the current construction zone
 #
-#
 # Set the mouse matrix
 # Default matrix 1 0 0 0 1 0 0 0 1
 #
@@ -34,22 +33,14 @@ fi
 # | 1 0 0 |
 # | 0 1 0 |
 # | 0 0 1 |
-
 #
 # I am attempting to take the output from xinput list-props and format it
 # to appear the same as it does for the input for xinput set-prop and 
 # print it to the screen before and after the input is inverted on the 
 # origin. This will also be helpful in producing a check to make sure the
 # matrix was set properly.
-#
-# I'm trying to figure it out without just googling the answer. 
-# 
-# awk/gawk and sed will most likely make this easier
-#
-# This is the current command piping that works
-# xinput list-props "$device_id" | grep Matrix
-#
-#mouse_matrix=$(xinput list-props 10 | grep Matrix | grep -o "[-0-9].000000" | cut -c 1 | tr -d '\n' | sed 's/\B/ /g')
+
+mouse_matirix=$(xinput list-props 10 | grep 'Coordinate Transformation Matrix' | awk '{printf "%.0f %.0f %.0f %.0f %.0f %.0f %.0f %.0f %.0f\n", $4, $5, $6, $7, $8, $9, $10, $11, $12}')
 
 
 # Check to see if matrix was found
@@ -59,7 +50,7 @@ if [ -n "$mouse_matrix" ]; then
     xinput set-prop $device_id "Coordinate Tranformation Matrix" -1 0 0 0 -1 0 0 0 1
 else
     # Print error message
-    echo "Failed to find current Transformation Matrix"
+    echo "Failed to set current Transformation Matrix"
 fi
     # Invert mouse output
     echo "new matrix: $mouse_matrix"
