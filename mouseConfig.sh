@@ -28,11 +28,14 @@ fi
 #
 # Set the mouse matrix
 # Default matrix 1 0 0 0 1 0 0 0 1
-#
 # This represents the affine matrix
 # | 1 0 0 |
 # | 0 1 0 |
 # | 0 0 1 |
+#
+# This rotates the origin 90 degrees counter-clockwise
+# xinput set-prop 10 "Coordinate Transformation Matrix" -0 -1 0 1 0 0 0 0 1
+# 
 #
 # I am attempting to take the output from xinput list-props and format it
 # to appear the same as it does for the input for xinput set-prop and 
